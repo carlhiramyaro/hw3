@@ -21,13 +21,13 @@
  * setting NODE_ENV to production will cause ExpressJS to serve up uninformative
  * server error responses for all errors.
  *
- * @author: kvlinden
- * @date: Summer, 2020
+ * @author: Carl Hiram Yaro
+ * @date: fall, 2023
  */
 
 // Set up the database connection.
 
-const pgp = require('pg-promise')();
+const pgp = require("pg-promise")();
 
 const db = pgp({
   host: process.env.DB_SERVER,
@@ -39,19 +39,19 @@ const db = pgp({
 
 // Configure the server and its routes.
 
-const express = require('express');
+const express = require("express");
 
 const app = express();
 const port = process.env.PORT || 3000;
 const router = express.Router();
 router.use(express.json());
 
-router.get('/', readHelloMessage);
-router.get('/players', readPlayers);
-router.get('/players/:id', readPlayer);
-router.put('/players/:id', updatePlayer);
-router.post('/players', createPlayer);
-router.delete('/players/:id', deletePlayer);
+router.get("/", readHelloMessage);
+router.get("/players", readPlayers);
+router.get("/players/:id", readPlayer);
+router.put("/players/:id", updatePlayer);
+router.post("/players", createPlayer);
+router.delete("/players/:id", deletePlayer);
 
 app.use(router);
 app.listen(port, () => console.log(`Listening on port ${port}`));
@@ -67,11 +67,11 @@ function returnDataOr404(res, data) {
 }
 
 function readHelloMessage(req, res) {
-  res.send('Hello, CS 262 Monopoly service!');
+  res.send("Carl's Homework");
 }
 
 function readPlayers(req, res, next) {
-  db.many('SELECT * FROM Player')
+  db.many("SELECT * FROM Player")
     .then((data) => {
       res.send(data);
     })
@@ -81,7 +81,7 @@ function readPlayers(req, res, next) {
 }
 
 function readPlayer(req, res, next) {
-  db.oneOrNone('SELECT * FROM Player WHERE id=${id}', req.params)
+  db.oneOrNone("SELECT * FROM Player WHERE id=${id}", req.params)
     .then((data) => {
       returnDataOr404(res, data);
     })
@@ -91,7 +91,10 @@ function readPlayer(req, res, next) {
 }
 
 function updatePlayer(req, res, next) {
-  db.oneOrNone('UPDATE Player SET email=${body.email}, name=${body.name} WHERE id=${params.id} RETURNING id', req)
+  db.oneOrNone(
+    "UPDATE Player SET email=${body.email}, name=${body.name} WHERE id=${params.id} RETURNING id",
+    req
+  )
     .then((data) => {
       returnDataOr404(res, data);
     })
@@ -101,7 +104,10 @@ function updatePlayer(req, res, next) {
 }
 
 function createPlayer(req, res, next) {
-  db.one('INSERT INTO Player(email, name) VALUES (${email}, ${name}) RETURNING id', req.body)
+  db.one(
+    "INSERT INTO Player(email, name) VALUES (${email}, ${name}) RETURNING id",
+    req.body
+  )
     .then((data) => {
       res.send(data);
     })
@@ -111,7 +117,7 @@ function createPlayer(req, res, next) {
 }
 
 function deletePlayer(req, res, next) {
-  db.oneOrNone('DELETE FROM Player WHERE id=${id} RETURNING id', req.params)
+  db.oneOrNone("DELETE FROM Player WHERE id=${id} RETURNING id", req.params)
     .then((data) => {
       returnDataOr404(res, data);
     })
